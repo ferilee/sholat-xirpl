@@ -216,7 +216,7 @@
             <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-6">
                 <div class="flex items-center">
                     <span class="text-xl mr-2">✅</span>
-                    <span>Data kehadiran sholat berhasil disimpan!</span>
+                    <span id="successContent">Data kehadiran sholat berhasil disimpan!</span>
                 </div>
             </div>
             
@@ -347,8 +347,8 @@
         let currentPrayer = '';
         let statisticsData = [];
         
-        // Google Apps Script URL
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbwQgGTKiZkxIVsC4QFiNbAGMJgFw5nYJCfXm2harBTRWy6YXHivvpX_ZXVi3Mf8SJZIQQ/exec';
+        // Google Apps Script URL - MENGGUNAKAN URL ANDA
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzKncEo7YyBpQMA7idMCQVfljaKu17s0UDJPrdLSzuKsukpGXuFZMi3dltxq7d3439x/exec';
         
         // Google Sheets CSV URL for statistics
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSk0ZnFPkHu2TpBkG90Kja6PkgrdJ9ndXMEsV4PpaBBNPMWY2pybk-NkhUKo1xMIakQGcO6xQAVsBNK/pub?gid=880745822&single=true&output=csv';
@@ -468,34 +468,24 @@
             
             try {
                 console.log('Loading students data from CSV...');
-                console.log('CSV URL:', studentsCsvUrl);
                 
                 // Show loading state
                 loadingElement.classList.remove('hidden');
                 containerElement.classList.add('hidden');
                 
-                // Add CORS headers and timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-                
                 const response = await fetch(studentsCsvUrl, {
                     method: 'GET',
-                    signal: controller.signal,
                     headers: {
                         'Accept': 'text/csv,text/plain,*/*',
                         'Cache-Control': 'no-cache'
                     }
                 });
                 
-                clearTimeout(timeoutId);
-                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const csvText = await response.text();
-                console.log('CSV data received, length:', csvText.length);
-                console.log('First 500 characters:', csvText.substring(0, 500));
                 
                 // Parse CSV data
                 studentsData = parseStudentsCSV(csvText);
@@ -533,12 +523,8 @@
         function parseStudentsCSV(csvText) {
             try {
                 const lines = csvText.trim().split('\n');
-                if (lines.length <= 1) {
-                    console.log('No data rows found in CSV');
-                    return [];
-                }
+                if (lines.length <= 1) return [];
                 
-                // Parse CSV with proper handling of quoted fields
                 const rows = [];
                 for (let i = 0; i < lines.length; i++) {
                     const row = parseCSVLine(lines[i]);
@@ -546,23 +532,19 @@
                 }
                 
                 const headers = rows[0].map(h => h.trim().toLowerCase());
-                console.log('CSV Headers:', headers);
                 
-                // Find column indices more flexibly
+                // Find column indices
                 const nameIndex = findColumnIndex(headers, ['nama', 'name', 'siswa']);
                 const nisIndex = findColumnIndex(headers, ['nis', 'nomor induk']);
                 const classIndex = findColumnIndex(headers, ['kelas', 'class']);
                 const genderIndex = findColumnIndex(headers, ['jenis kelamin', 'gender', 'kelamin']);
-                
-                console.log('Column indices:', { nameIndex, nisIndex, classIndex, genderIndex });
                 
                 const students = [];
                 
                 // Process each data row
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    
-                    if (row.length < 2) continue; // Skip rows with too few columns
+                    if (row.length < 2) continue;
                     
                     const name = nameIndex >= 0 && row[nameIndex] ? row[nameIndex].trim() : '';
                     const nis = nisIndex >= 0 && row[nisIndex] ? row[nisIndex].trim() : '';
@@ -576,13 +558,11 @@
                             nis: nis,
                             class: studentClass,
                             gender: gender,
-                            status: 'sholat' // default status
+                            status: 'sholat'
                         });
                     }
                 }
                 
-                console.log('Parsed students:', students.length, 'students');
-                console.log('Sample students:', students.slice(0, 3));
                 return students;
                 
             } catch (error) {
@@ -622,32 +602,13 @@
         }
 
         function useFallbackStudents() {
-            // Fallback to hardcoded data if CSV fails
             const fallbackStudents = [
-                'AULIA AZZARA NUR RAMDANI',
-                'CHIKA AFINSA RAMADHANI',
-                'RENO FIRMANSYAH',
-                'RISQI ADITYA',
-                'AUGUSTAV BRILLYAN SINDUARTHA',
-                'PUTRA PUGUH PRADANA',
-                'SALSAHIRA DUWI APRILIA',
-                'WAHYU EKA ADI PRATAMA',
-                'FIRDAUS ZIDDAN AZZAINURI',
-                'MARVELINO ALFRADO',
-                'MUHAMMAD EDI SANTOSO',
-                'NABILA NUR AZIZAH',
-                'ADINDA ANEZTYA ZAHRA',
-                'FARHAN DHIYA\'UL HAQ',
-                'RAFAEL ONIL MULYA PUTRA',
-                'REYHAN ALIF RAMADHAN',
-                'AYU DWI HANAFI',
-                'BRIANDA WISNU YUSENA',
-                'RAFI ARDIANSYAH EGI RAMADHAN',
-                'VALENTINO AFASHA SALEH',
-                'DINDA MAI SAFIRA',
-                'MUHAMMAD HATTA PRIMA NURRAHMAN',
-                'MUHAMMAD IRFAN KHOIRUL HIDAYAH',
-                'NUR RAHMAD HIDAYAT'
+                'AULIA AZZARA NUR RAMDANI', 'CHIKA AFINSA RAMADHANI', 'RENO FIRMANSYAH', 'RISQI ADITYA',
+                'AUGUSTAV BRILLYAN SINDUARTHA', 'PUTRA PUGUH PRADANA', 'SALSAHIRA DUWI APRILIA', 'WAHYU EKA ADI PRATAMA',
+                'FIRDAUS ZIDDAN AZZAINURI', 'MARVELINO ALFRADO', 'MUHAMMAD EDI SANTOSO', 'NABILA NUR AZIZAH',
+                'ADINDA ANEZTYA ZAHRA', 'FARHAN DHIYA\'UL HAQ', 'RAFAEL ONIL MULYA PUTRA', 'REYHAN ALIF RAMADHAN',
+                'AYU DWI HANAFI', 'BRIANDA WISNU YUSENA', 'RAFI ARDIANSYAH EGI RAMADHAN', 'VALENTINO AFASHA SALEH',
+                'DINDA MAI SAFIRA', 'MUHAMMAD HATTA PRIMA NURRAHMAN', 'MUHAMMAD IRFAN KHOIRUL HIDAYAH', 'NUR RAHMAD HIDAYAT'
             ];
             
             studentsData = fallbackStudents.map(name => ({
@@ -674,7 +635,6 @@
                 const studentCard = document.createElement('div');
                 studentCard.className = 'flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
                 
-                // Special styling for Jum'at based on gender
                 const isJumat = currentPrayer === 'jumat';
                 const isFemale = student.gender && student.gender.includes('perempuan');
                 const jumatClass = isJumat && isFemale ? 'opacity-60' : '';
@@ -746,104 +706,16 @@
                 return;
             }
             
-            // Check if all students have status
             const hasEmptyStatus = studentsData.some(student => !student.status);
             if (hasEmptyStatus) {
                 showError('Mohon pastikan semua siswa memiliki status kehadiran!');
                 return;
             }
             
-            // Show confirmation modal
             showConfirmationModal();
         }
 
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            const errorContent = document.getElementById('errorContent');
-            errorContent.textContent = message;
-            errorMessage.classList.remove('hidden');
-            
-            // Auto-hide after 8 seconds
-            setTimeout(() => {
-                errorMessage.classList.add('hidden');
-            }, 8000);
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show dashboard by default
-            showPage('dashboardPage');
-            
-            // Load recent activity
-            loadRecentActivity();
-        });
-
-        // Load recent activity for dashboard
-        async function loadRecentActivity() {
-            try {
-                // This would typically load from your API
-                // For now, we'll simulate loading and show sample data
-                setTimeout(() => {
-                    document.getElementById('recentActivity').innerHTML = `
-                        <div class="flex items-center p-3 bg-green-50 rounded-lg">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-green-600">🌅</span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800">Sholat Dhuha - ${studentsData.length} Siswa</p>
-                                <p class="text-sm text-gray-600">Data terbaru akan muncul di sini</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center p-3 bg-blue-50 rounded-lg">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-blue-600">📊</span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800">Statistik Mingguan</p>
-                                <p class="text-sm text-gray-600">Tingkat kehadiran akan ditampilkan di sini</p>
-                            </div>
-                        </div>
-                    `;
-                }, 1000);
-            } catch (error) {
-                console.error('Error loading recent activity:', error);
-            }
-        }
-
-        // Statistics functions (simplified for example)
-        async function loadStatistics() {
-            // Your existing statistics implementation
-            console.log('Loading statistics...');
-        }
-
-        function showStatsTab(tabName) {
-            // Your existing tab implementation
-            console.log('Showing tab:', tabName);
-        }
-
-        function filterDailyStats() {
-            // Your existing filter implementation
-            console.log('Filtering daily stats...');
-        }
-
-        function filterWeeklyStats() {
-            // Your existing filter implementation
-            console.log('Filtering weekly stats...');
-        }
-
-        function filterMonthlyStats() {
-            // Your existing filter implementation
-            console.log('Filtering monthly stats...');
-        }
-
-        function getWeekString(date) {
-            // Your existing week string implementation
-            const year = date.getFullYear();
-            const week = Math.ceil((((date - new Date(date.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
-            return `${year}-W${week.toString().padStart(2, '0')}`;
-        }
-
-        // Submit attendance function
+        // SUBMIT ATTENDANCE TO GOOGLE SHEETS
         async function submitAttendance() {
             const date = document.getElementById('attendanceDate').value;
             const prayer = document.getElementById('prayerSelect').value;
@@ -861,36 +733,193 @@
                 const attendanceRecords = studentsData.map(student => ({
                     timestamp: new Date().toISOString(),
                     date: date,
-                    class: 'XI RPL',
+                    class: student.class,
                     prayer: prayerName,
                     studentName: student.name,
-                    status: student.status
+                    status: student.status,
+                    nis: student.nis,
+                    gender: student.gender
                 }));
                 
-                console.log('Sending attendance data:', attendanceRecords);
+                console.log('Sending attendance data to:', webAppUrl);
+                console.log('Data:', attendanceRecords);
                 
-                // Your existing submission logic here
-                // ...
+                // Multiple submission methods for reliability
+                let success = false;
+                let result = null;
+                let lastError = null;
                 
-                // Simulate successful submission
-                setTimeout(() => {
+                // Method 1: POST with JSON
+                try {
+                    console.log('Trying Method 1: POST with JSON');
+                    const response = await fetch(webAppUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'saveAttendance',
+                            data: attendanceRecords
+                        })
+                    });
+                    
+                    result = await response.json();
+                    console.log('Method 1 result:', result);
+                    
+                    if (result.success) {
+                        success = true;
+                    } else {
+                        lastError = result.error || 'Unknown error from server';
+                    }
+                } catch (error) {
+                    console.log('Method 1 failed:', error);
+                    lastError = error.message;
+                }
+                
+                // Method 2: FormData
+                if (!success) {
+                    try {
+                        console.log('Trying Method 2: FormData');
+                        const formData = new FormData();
+                        formData.append('action', 'saveAttendance');
+                        formData.append('data', JSON.stringify(attendanceRecords));
+                        
+                        const response = await fetch(webAppUrl, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        result = await response.json();
+                        console.log('Method 2 result:', result);
+                        
+                        if (result.success) {
+                            success = true;
+                        } else {
+                            lastError = result.error || 'Unknown error from server';
+                        }
+                    } catch (error) {
+                        console.log('Method 2 failed:', error);
+                        lastError = error.message;
+                    }
+                }
+                
+                // Method 3: URL parameters (GET)
+                if (!success) {
+                    try {
+                        console.log('Trying Method 3: GET with URL parameters');
+                        const params = new URLSearchParams({
+                            action: 'saveAttendance',
+                            data: JSON.stringify(attendanceRecords)
+                        });
+                        
+                        const response = await fetch(`${webAppUrl}?${params}`, {
+                            method: 'GET'
+                        });
+                        
+                        result = await response.json();
+                        console.log('Method 3 result:', result);
+                        
+                        if (result.success) {
+                            success = true;
+                        } else {
+                            lastError = result.error || 'Unknown error from server';
+                        }
+                    } catch (error) {
+                        console.log('Method 3 failed:', error);
+                        lastError = error.message;
+                    }
+                }
+                
+                if (success) {
+                    // Show success message
+                    const successContent = document.getElementById('successContent');
+                    successContent.textContent = result.message || `Data kehadiran ${prayerName} berhasil disimpan untuk ${attendanceRecords.length} siswa!`;
                     document.getElementById('successMessage').classList.remove('hidden');
                     hideConfirmationModal();
                     
-                    // Auto-hide success message after 3 seconds
+                    // Auto-hide success message after 5 seconds
                     setTimeout(() => {
                         document.getElementById('successMessage').classList.add('hidden');
-                    }, 3000);
-                }, 1000);
+                    }, 5000);
+                    
+                    // Refresh statistics after successful submission
+                    setTimeout(() => {
+                        console.log('Refreshing statistics after successful submission...');
+                        loadStatistics();
+                    }, 2000);
+                    
+                } else {
+                    throw new Error(lastError || 'Semua metode pengiriman gagal. Periksa koneksi internet dan URL Google Apps Script.');
+                }
                 
             } catch (error) {
                 console.error('Error saving prayer attendance:', error);
-                showError(`Gagal menyimpan data: ${error.message}. Coba refresh halaman dan ulangi.`);
+                showError(`Gagal menyimpan data: ${error.message}`);
             } finally {
                 // Restore button state
                 submitButton.innerHTML = originalText;
                 submitButton.disabled = false;
             }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorContent = document.getElementById('errorContent');
+            errorContent.textContent = message;
+            errorMessage.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 8000);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('dashboardPage');
+            loadRecentActivity();
+        });
+
+        function loadRecentActivity() {
+            setTimeout(() => {
+                document.getElementById('recentActivity').innerHTML = `
+                    <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-green-600">🌅</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800">Sholat Dhuha - ${studentsData.length} Siswa</p>
+                            <p class="text-sm text-gray-600">Data terbaru akan muncul di sini</p>
+                        </div>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        // Statistics functions
+        async function loadStatistics() {
+            console.log('Loading statistics...');
+        }
+
+        function showStatsTab(tabName) {
+            console.log('Showing tab:', tabName);
+        }
+
+        function filterDailyStats() {
+            console.log('Filtering daily stats...');
+        }
+
+        function filterWeeklyStats() {
+            console.log('Filtering weekly stats...');
+        }
+
+        function filterMonthlyStats() {
+            console.log('Filtering monthly stats...');
+        }
+
+        function getWeekString(date) {
+            const year = date.getFullYear();
+            const week = Math.ceil((((date - new Date(date.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
+            return `${year}-W${week.toString().padStart(2, '0')}`;
         }
 
     </script>
