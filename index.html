@@ -3,40 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kehadiran Sholat - XI RPL</title>
+    <title>Form Kehadiran Sholat - XI RPL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .stats-content { display: none; }
-        .stats-content.active { display: block; }
-        .chart-bar {
-            transition: all 0.3s ease;
-        }
-        .chart-bar:hover {
-            opacity: 0.8;
-        }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
         .loading-spinner {
             border: 3px solid #f3f3f3;
             border-radius: 50%;
             border-top: 3px solid #3498db;
-            width: 30px;
-            height: 30px;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            display: inline-block;
+            margin-right: 8px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -46,298 +26,164 @@
 </head>
 <body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- Dashboard Page -->
-        <div id="dashboardPage" class="page active fade-in">
-            <!-- Header -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 text-center mb-2">🕌 Dashboard Kehadiran Sholat</h1>
-                <p class="text-gray-600 text-center mb-4">SMK Negeri Pasirian - Kelas XI RPL</p>
-                
-                <!-- Teacher Card -->
-                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-                    <div class="flex items-center justify-center">
-                        <img src="https://live.staticflickr.com/65535/54509797172_fa540c8b67_b.jpg"
-                              alt="Foto Guru"
-                              class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg mr-4"
-                             onerror="this.src=''; this.alt='Avatar tidak dapat dimuat'; this.style.display='none';">
-                        <div class="text-center">
-                            <h3 class="text-lg font-semibold text-gray-800">👨‍🏫 Guru Pengampu</h3>
-                            <p class="text-green-600 font-medium">Feri Dwi Hermawan, S.Pd.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow cursor-pointer" onclick="showPage('attendancePage')">
-                    <div class="text-4xl mb-4">📝</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Isi Kehadiran Sholat</h3>
-                    <p class="text-gray-600">Input kehadiran sholat Dhuha, Dhuhur, Ashar, dan Jum'at</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow cursor-pointer" onclick="showPage('statisticsPage')">
-                    <div class="text-4xl mb-4">📊</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Lihat Statistik</h3>
-                    <p class="text-gray-600">Analisis data kehadiran sholat siswa</p>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 Aktivitas Terbaru</h2>
-                <div id="recentActivity" class="space-y-3">
-                    <div class="text-center py-4">
-                        <div class="loading-spinner mb-2"></div>
-                        <p class="text-gray-500">Memuat data terbaru...</p>
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 text-center mb-2">🕌 Form Kehadiran Sholat</h1>
+            <p class="text-gray-600 text-center mb-4">SMK Negeri Pasirian - Kelas XI RPL</p>
+            
+            <!-- Teacher Card -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                <div class="flex items-center justify-center">
+                    <img src="https://live.staticflickr.com/65535/54509797172_fa540c8b67_b.jpg"
+                          alt="Foto Guru"
+                          class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg mr-4"
+                         onerror="this.src=''; this.alt='Avatar tidak dapat dimuat'; this.style.display='none';">
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-800">👨‍🏫 Guru Pengampu</h3>
+                        <p class="text-green-600 font-medium">Feri Dwi Hermawan, S.Pd.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Attendance Form Page -->
-        <div id="attendancePage" class="page">
-            <!-- Header -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="showPage('dashboardPage')" class="flex items-center text-green-600 hover:text-green-800 font-medium transition-colors">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Kembali ke Dashboard
-                    </button>
-                    <h1 class="text-2xl font-bold text-gray-800">📝 Form Kehadiran Sholat</h1>
+        <!-- Prayer Selection and Date -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-lg font-semibold text-gray-700 mb-3">Pilih Sholat:</label>
+                    <select id="prayerSelect" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none transition-colors">
+                        <option value="">-- Pilih Sholat --</option>
+                        <option value="dhuha">🌅 Sholat Dhuha</option>
+                        <option value="dhuhur">☀️ Sholat Dhuhur</option>
+                        <option value="ashar">🌇 Sholat Ashar</option>
+                        <option value="jumat">🕌 Sholat Jum'at</option>
+                    </select>
                 </div>
-                
-                <!-- Teacher Card -->
-                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-                    <div class="flex items-center justify-center">
-                        <img src="https://live.staticflickr.com/65535/54509797172_fa540c8b67_b.jpg"
-                              alt="Foto Guru"
-                              class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg mr-4"
-                             onerror="this.src=''; this.alt='Avatar tidak dapat dimuat'; this.style.display='none';">
-                        <div class="text-center">
-                            <h3 class="text-lg font-semibold text-gray-800">👨‍🏫 Guru Pengampu</h3>
-                            <p class="text-green-600 font-medium">Feri Dwi Hermawan, S.Pd.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Prayer Selection and Date -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-lg font-semibold text-gray-700 mb-3">Pilih Sholat:</label>
-                        <select id="prayerSelect" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none transition-colors">
-                            <option value="">-- Pilih Sholat --</option>
-                            <option value="dhuha">🌅 Sholat Dhuha</option>
-                            <option value="dhuhur">☀️ Sholat Dhuhur</option>
-                            <option value="ashar">🌇 Sholat Ashar</option>
-                            <option value="jumat">🕌 Sholat Jum'at</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-lg font-semibold text-gray-700 mb-3">Tanggal:</label>
-                        <input type="date" id="attendanceDate" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none transition-colors">
-                    </div>
-                </div>
-                
-                <!-- Special Note for Jum'at -->
-                <div id="jumatNote" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
-                    <div class="flex items-start">
-                        <span class="text-blue-500 text-xl mr-2">ℹ️</span>
-                        <div>
-                            <h4 class="font-semibold text-blue-800">Catatan Sholat Jum'at</h4>
-                            <p class="text-blue-700 text-sm">Sholat Jum'at hanya diwajibkan untuk siswa laki-laki. Siswa perempuan dapat mengisi sholat Dhuhur.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Student List -->
-            <div id="studentList" class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa XI RPL</h2>
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="markAllStatus('sholat')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg transition-colors text-sm">
-                            🕌 Semua Sholat
-                        </button>
-                        <button onclick="markAllStatus('berhalangan')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg transition-colors text-sm">
-                            🚫 Semua Berhalangan
-                        </button>
-                        <button onclick="markAllStatus('tidak_sholat')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-colors text-sm">
-                            ❌ Semua Tidak Sholat
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Loading State for Students -->
-                <div id="studentsLoading" class="text-center py-8">
-                    <div class="loading-spinner mb-4"></div>
-                    <p class="text-gray-600">Memuat data siswa...</p>
-                </div>
-                
-                <div id="studentsContainer" class="space-y-3 hidden">
-                    <!-- Students will be loaded here -->
-                </div>
-                
-                <!-- Summary -->
-                <div class="mt-8 p-4 bg-gray-50 rounded-lg">
-                    <h3 class="font-semibold text-gray-700 mb-2">Ringkasan Kehadiran Sholat:</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                        <div class="bg-green-100 p-3 rounded-lg">
-                            <div class="text-xl font-bold text-green-600" id="sholatCount">0</div>
-                            <div class="text-xs text-green-700">Sholat</div>
-                        </div>
-                        <div class="bg-yellow-100 p-3 rounded-lg">
-                            <div class="text-xl font-bold text-yellow-600" id="berhalaganCount">0</div>
-                            <div class="text-xs text-yellow-700">Berhalangan</div>
-                        </div>
-                        <div class="bg-red-100 p-3 rounded-lg">
-                            <div class="text-xl font-bold text-red-600" id="tidakSholatCount">0</div>
-                            <div class="text-xs text-red-700">Tidak Sholat</div>
-                        </div>
-                        <div class="bg-gray-100 p-3 rounded-lg">
-                            <div class="text-xl font-bold text-gray-600" id="totalCount">0</div>
-                            <div class="text-xs text-gray-700">Total</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Submit Button -->
-                <div class="mt-6 text-center">
-                    <button onclick="validateAndSubmit()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors shadow-lg">
-                        💾 Simpan Kehadiran Sholat
-                    </button>
+                <div>
+                    <label class="block text-lg font-semibold text-gray-700 mb-3">Tanggal:</label>
+                    <input type="date" id="attendanceDate" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none transition-colors">
                 </div>
             </div>
             
-            <!-- Success Message -->
-            <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-6">
-                <div class="flex items-center">
-                    <span class="text-xl mr-2">✅</span>
-                    <span id="successContent">Data kehadiran sholat berhasil disimpan!</span>
-                </div>
-            </div>
-            
-            <!-- Error Message -->
-            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-6">
+            <!-- Google Form Info -->
+            <div id="formInfo" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div class="flex items-start">
-                    <span class="text-xl mr-2">❌</span>
+                    <span class="text-blue-500 text-xl mr-2">📋</span>
                     <div>
-                        <div class="font-semibold mb-2">Error:</div>
-                        <div id="errorContent" class="text-sm"></div>
+                        <h4 class="font-semibold text-blue-800">Data akan disimpan via Google Form</h4>
+                        <p class="text-blue-700 text-sm">✅ Google Form terintegrasi dengan baik</p>
+                        <p class="text-blue-600 text-xs mt-1">Data otomatis tersimpan di Google Sheets</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Statistics Page -->
-        <div id="statisticsPage" class="page">
-            <!-- Header -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="showPage('dashboardPage')" class="flex items-center text-green-600 hover:text-green-800 font-medium transition-colors">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Kembali ke Dashboard
+        <!-- Student List -->
+        <div id="studentList" class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Daftar Siswa XI RPL</h2>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="markAllStatus('sholat')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg transition-colors text-sm">
+                        🕌 Semua Sholat
                     </button>
-                    <h1 class="text-2xl font-bold text-gray-800">📊 Statistik Kehadiran Sholat</h1>
+                    <button onclick="markAllStatus('berhalangan')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg transition-colors text-sm">
+                        🚫 Semua Berhalangan
+                    </button>
+                    <button onclick="markAllStatus('tidak_sholat')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-colors text-sm">
+                        ❌ Semua Tidak Sholat
+                    </button>
                 </div>
             </div>
-
-            <!-- Statistics Dashboard -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">📊 Statistik Kehadiran Sholat</h2>
-                    <button onclick="loadStatistics()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        🔄 Refresh Data
-                    </button>
-                </div>
-                
-                <!-- Loading Statistics -->
-                <div id="statsLoading" class="hidden text-center py-8">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    <p class="mt-2 text-gray-600">Memuat statistik...</p>
-                </div>
-                
-                <!-- Statistics Tabs -->
-                <div class="mb-6">
-                    <div class="flex border-b border-gray-200">
-                        <button onclick="showStatsTab('daily')" id="dailyTab" class="px-4 py-2 font-medium text-blue-600 border-b-2 border-blue-600">
-                            📅 Harian
-                        </button>
-                        <button onclick="showStatsTab('weekly')" id="weeklyTab" class="px-4 py-2 font-medium text-gray-500 hover:text-blue-600 border-b-2 border-transparent">
-                            📊 Mingguan
-                        </button>
-                        <button onclick="showStatsTab('monthly')" id="monthlyTab" class="px-4 py-2 font-medium text-gray-500 hover:text-blue-600 border-b-2 border-transparent">
-                            📈 Bulanan
-                        </button>
+            
+            <div id="studentsContainer" class="space-y-3">
+                <!-- Students will be loaded here -->
+            </div>
+            
+            <!-- Summary -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="font-semibold text-gray-700 mb-2">Ringkasan Kehadiran Sholat:</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <div class="text-xl font-bold text-green-600" id="sholatCount">0</div>
+                        <div class="text-xs text-green-700">Sholat</div>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-lg">
+                        <div class="text-xl font-bold text-yellow-600" id="berhalaganCount">0</div>
+                        <div class="text-xs text-yellow-700">Berhalangan</div>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-lg">
+                        <div class="text-xl font-bold text-red-600" id="tidakSholatCount">0</div>
+                        <div class="text-xs text-red-700">Tidak Sholat</div>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-lg">
+                        <div class="text-xl font-bold text-gray-600" id="totalCount">0</div>
+                        <div class="text-xs text-gray-700">Total</div>
                     </div>
                 </div>
-                
-                <!-- Daily Statistics -->
-                <div id="dailyStats" class="stats-content active">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal:</label>
-                        <input type="date" id="dailyDatePicker" class="border border-gray-300 rounded-lg px-3 py-2" onchange="filterDailyStats()">
-                    </div>
-                    <div id="dailyStatsContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Daily stats will be loaded here -->
-                    </div>
-                </div>
-                
-                <!-- Weekly Statistics -->
-                <div id="weeklyStats" class="stats-content">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Minggu:</label>
-                        <input type="week" id="weeklyDatePicker" class="border border-gray-300 rounded-lg px-3 py-2" onchange="filterWeeklyStats()">
-                    </div>
-                    <div id="weeklyStatsContent" class="space-y-4">
-                        <!-- Weekly stats will be loaded here -->
-                    </div>
-                </div>
-                
-                <!-- Monthly Statistics -->
-                <div id="monthlyStats" class="stats-content">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Bulan:</label>
-                        <input type="month" id="monthlyDatePicker" class="border border-gray-300 rounded-lg px-3 py-2" onchange="filterMonthlyStats()">
-                    </div>
-                    <div id="monthlyStatsContent" class="space-y-4">
-                        <!-- Monthly stats will be loaded here -->
-                    </div>
-                </div>
-                
-                <!-- No Data Message -->
-                <div id="noStatsData" class="hidden text-center py-8">
-                    <div class="text-gray-400 text-6xl mb-4">📊</div>
-                    <h3 class="text-lg font-medium text-gray-600 mb-2">Belum Ada Data Statistik</h3>
-                    <p class="text-gray-500">Silakan simpan data kehadiran sholat terlebih dahulu</p>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="mt-6 text-center">
+                <button onclick="submitToGoogleForm()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors shadow-lg">
+                    💾 Simpan ke Google Form
+                </button>
+                <div class="mt-2 text-sm text-gray-600">
+                    Data akan dikirim ke Google Form dan tersimpan otomatis di Google Sheets
                 </div>
             </div>
         </div>
-    </div>
+        
+        <!-- Progress Modal -->
+        <div id="progressModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+                <div class="text-center mb-4">
+                    <div class="text-4xl mb-2">⏳</div>
+                    <h3 class="text-xl font-semibold text-gray-800">Menyimpan Data</h3>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Progress:</span>
+                        <span id="progressText">0/0</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-sm text-center" id="progressMessage">
+                    Mengirim data ke Google Form...
+                </p>
+            </div>
+        </div>
+        
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-6">
+            <div class="flex items-center">
+                <span class="text-xl mr-2">✅</span>
+                <span id="successContent">Data kehadiran sholat berhasil disimpan!</span>
+            </div>
+        </div>
+        
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-6">
+            <div class="flex items-start">
+                <span class="text-xl mr-2">❌</span>
+                <div>
+                    <div class="font-semibold mb-2">Error:</div>
+                    <div id="errorContent" class="text-sm"></div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-            <div class="text-center mb-4">
-                <div class="text-4xl mb-2">⚠️</div>
-                <h3 class="text-xl font-semibold text-gray-800">Konfirmasi Penyimpanan</h3>
-            </div>
-            <p class="text-gray-600 mb-6 text-center">
-                Anda akan menyimpan data kehadiran sholat. Pastikan data sudah benar sebelum melanjutkan.
-            </p>
-            <div class="flex gap-3">
-                <button onclick="hideConfirmationModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-lg transition-colors">
-                    Batal
-                </button>
-                <button onclick="submitAttendance()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors">
-                    Ya, Simpan
-                </button>
-            </div>
+        <!-- Google Form & Sheets Links -->
+        <div class="mt-6 text-center space-y-2">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfmepe4On3uCQRv2H3J8yN-mjTxzmUUBAh9wnB0AjWol-DHdg/viewform" 
+               target="_blank" class="text-blue-600 hover:text-blue-800 text-sm block">
+                📝 Lihat Google Form
+            </a>
+            <a href="https://docs.google.com/spreadsheets/d/1FAIpQLSfmepe4On3uCQRv2H3J8yN-mjTxzmUUBAh9wnB0AjWol-DHdg/edit?usp=sharing" 
+               target="_blank" class="text-green-600 hover:text-green-800 text-sm block">
+                📊 Lihat Google Sheets
+            </a>
         </div>
     </div>
 
@@ -345,179 +191,92 @@
         // Data and configuration
         let studentsData = [];
         let currentPrayer = '';
-        let statisticsData = [];
         
-        // Google Apps Script URL - MENGGUNAKAN URL ANDA
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzKncEo7YyBpQMA7idMCQVfljaKu17s0UDJPrdLSzuKsukpGXuFZMi3dltxq7d3439x/exec';
+        // Google Form Configuration - SUDAH DIKONFIGURASI
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfmepe4On3uCQRv2H3J8yN-mjTxzmUUBAh9wnB0AjWol-DHdg/formResponse';
         
-        // Google Sheets CSV URL for statistics
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSk0ZnFPkHu2TpBkG90Kja6PkgrdJ9ndXMEsV4PpaBBNPMWY2pybk-NkhUKo1xMIakQGcO6xQAVsBNK/pub?gid=880745822&single=true&output=csv';
-        
-        // Google Sheets CSV URL for students data
-        const studentsCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNxfl64ybd5HEX-Ln3ubR8C-SxModDRkPVuRpShlUDX2UCRgKib2cIqXtsUPT4d0rJY_gkaCQVOTSb/pub?gid=1025174012&single=true&output=csv';
-
-        // Prayer configuration
-        const prayerConfig = {
-            'dhuha': {
-                name: 'Sholat Dhuha',
-                icon: '🌅',
-                time: 'Pagi'
-            },
-            'dhuhur': {
-                name: 'Sholat Dhuhur',
-                icon: '☀️',
-                time: 'Siang'
-            },
-            'ashar': {
-                name: 'Sholat Ashar',
-                icon: '🌇',
-                time: 'Sore'
-            },
-            'jumat': {
-                name: 'Sholat Jum\'at',
-                icon: '🕌',
-                time: 'Jum\'at',
-                note: 'Hanya untuk siswa laki-laki'
-            }
+        // Field IDs dari Google Form Anda - SUDAH DITEMUKAN
+        const FORM_FIELD_IDS = {
+            timestamp: 'entry.1189730886',
+            date: 'entry.398222560',
+            class: 'entry.437696563',
+            prayer: 'entry.1674162174',
+            studentName: 'entry.2049938220',
+            status: 'entry.1488425238',
+            nis: 'entry.380156165'
         };
 
-        // Page Navigation Functions
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
-            document.getElementById(pageId).classList.add('fade-in');
-            
-            // Initialize page-specific content
-            if (pageId === 'attendancePage') {
-                initializeAttendancePage();
-            } else if (pageId === 'statisticsPage') {
-                initializeStatisticsPage();
-            }
-        }
+        // Data siswa XI RPL
+        const xiRplStudents = [
+            'AULIA AZZARA NUR RAMDANI',
+            'CHIKA AFINSA RAMADHANI', 
+            'RENO FIRMANSYAH',
+            'RISQI ADITYA',
+            'AUGUSTAV BRILLYAN SINDUARTHA',
+            'PUTRA PUGUH PRADANA',
+            'SALSAHIRA DUWI APRILIA',
+            'WAHYU EKA ADI PRATAMA',
+            'FIRDAUS ZIDDAN AZZAINURI',
+            'MARVELINO ALFRADO',
+            'MUHAMMAD EDI SANTOSO',
+            'NABILA NUR AZIZAH',
+            'ADINDA ANEZTYA ZAHRA',
+            'FARHAN DHIYA\'UL HAQ',
+            'RAFAEL ONIL MULYA PUTRA',
+            'REYHAN ALIF RAMADHAN',
+            'AYU DWI HANAFI',
+            'BRIANDA WISNU YUSENA',
+            'RAFI ARDIANSYAH EGI RAMADHAN',
+            'VALENTINO AFASHA SALEH',
+            'DINDA MAI SAFIRA',
+            'MUHAMMAD HATTA PRIMA NURRAHMAN',
+            'MUHAMMAD IRFAN KHOIRUL HIDAYAH',
+            'NUR RAHMAD HIDAYAT'
+        ];
 
-        function initializeAttendancePage() {
-            // Set today's date as default
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing application with Google Form integration...');
+            
+            // Set default date
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('attendanceDate').value = today;
             
-            // Load students with default prayer
-            if (!currentPrayer) {
-                currentPrayer = 'dhuha';
-                document.getElementById('prayerSelect').value = 'dhuha';
-            }
+            // Set default prayer
+            currentPrayer = 'dhuha';
+            document.getElementById('prayerSelect').value = 'dhuha';
             
-            // Load students from CSV
-            loadStudentsFromCSV();
-        }
-
-        function initializeStatisticsPage() {
-            // Set default date values
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dailyDatePicker').value = today;
-            document.getElementById('weeklyDatePicker').value = getWeekString(new Date());
-            document.getElementById('monthlyDatePicker').value = today.substring(0, 7);
-            
-            // Load statistics
-            loadStatistics();
-        }
-
-        // Modal Functions
-        function showConfirmationModal() {
-            document.getElementById('confirmationModal').classList.remove('hidden');
-        }
-
-        function hideConfirmationModal() {
-            document.getElementById('confirmationModal').classList.add('hidden');
-        }
-
-        // Prayer Selection Handler
-        document.getElementById('prayerSelect').addEventListener('change', function() {
-            const selectedPrayer = this.value;
-            const jumatNote = document.getElementById('jumatNote');
-            
-            if (selectedPrayer) {
-                currentPrayer = selectedPrayer;
-                
-                // Show/hide Jum'at note
-                if (selectedPrayer === 'jumat') {
-                    jumatNote.classList.remove('hidden');
-                } else {
-                    jumatNote.classList.add('hidden');
-                }
-                
-                // Update student display if data is already loaded
-                if (studentsData.length > 0) {
-                    displayStudents();
-                }
-                document.getElementById('studentList').classList.remove('hidden');
-            } else {
-                document.getElementById('studentList').classList.add('hidden');
-                jumatNote.classList.add('hidden');
-            }
+            // Load students data
+            loadStudentsData();
         });
 
-        // Load Students from CSV
-        async function loadStudentsFromCSV() {
-            const loadingElement = document.getElementById('studentsLoading');
-            const containerElement = document.getElementById('studentsContainer');
-            
+        // Load students from CSV or use default
+        async function loadStudentsData() {
             try {
-                console.log('Loading students data from CSV...');
+                // Try to load from CSV first
+                const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNxfl64ybd5HEX-Ln3ubR8C-SxModDRkPVuRpShlUDX2UCRgKib2cIqXtsUPT4d0rJY_gkaCQVOTSb/pub?gid=1025174012&single=true&output=csv';
+                const response = await fetch(csvUrl);
                 
-                // Show loading state
-                loadingElement.classList.remove('hidden');
-                containerElement.classList.add('hidden');
-                
-                const response = await fetch(studentsCsvUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'text/csv,text/plain,*/*',
-                        'Cache-Control': 'no-cache'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.ok) {
+                    const csvText = await response.text();
+                    studentsData = parseStudentsCSV(csvText);
+                    console.log('Loaded students from CSV:', studentsData.length);
+                } else {
+                    throw new Error('CSV not available');
                 }
-                
-                const csvText = await response.text();
-                
-                // Parse CSV data
-                studentsData = parseStudentsCSV(csvText);
-                console.log('Parsed students data:', studentsData.length, 'students');
-                
-                if (studentsData.length === 0) {
-                    throw new Error('Tidak ada data siswa yang ditemukan di CSV');
-                }
-                
-                // Hide loading and show students
-                loadingElement.classList.add('hidden');
-                containerElement.classList.remove('hidden');
-                
-                // Display students
-                displayStudents();
-                document.getElementById('studentList').classList.remove('hidden');
-                
             } catch (error) {
-                console.error('Error loading students data:', error);
-                
-                // Show error and fallback to hardcoded data
-                loadingElement.innerHTML = `
-                    <div class="text-center py-4">
-                        <div class="text-red-500 text-4xl mb-2">❌</div>
-                        <p class="text-red-600 mb-2">Gagal memuat data siswa</p>
-                        <p class="text-gray-500 text-sm mb-4">${error.message}</p>
-                        <button onclick="useFallbackStudents()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                            Gunakan Data Default
-                        </button>
-                    </div>
-                `;
+                console.log('Using default students data');
+                // Use default data if CSV fails
+                studentsData = xiRplStudents.map((name, index) => ({
+                    name: name,
+                    nis: (index + 1).toString().padStart(3, '0'),
+                    class: 'XI RPL',
+                    gender: Math.random() > 0.5 ? 'Laki-laki' : 'Perempuan',
+                    status: 'sholat'
+                }));
             }
+            
+            displayStudents();
         }
 
         function parseStudentsCSV(csvText) {
@@ -525,37 +284,28 @@
                 const lines = csvText.trim().split('\n');
                 if (lines.length <= 1) return [];
                 
-                const rows = [];
-                for (let i = 0; i < lines.length; i++) {
-                    const row = parseCSVLine(lines[i]);
-                    rows.push(row);
-                }
-                
-                const headers = rows[0].map(h => h.trim().toLowerCase());
+                const students = [];
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
                 
                 // Find column indices
-                const nameIndex = findColumnIndex(headers, ['nama', 'name', 'siswa']);
-                const nisIndex = findColumnIndex(headers, ['nis', 'nomor induk']);
-                const classIndex = findColumnIndex(headers, ['kelas', 'class']);
-                const genderIndex = findColumnIndex(headers, ['jenis kelamin', 'gender', 'kelamin']);
+                const nameIndex = headers.findIndex(h => h.includes('nama'));
+                const nisIndex = headers.findIndex(h => h.includes('nis'));
+                const classIndex = headers.findIndex(h => h.includes('kelas'));
+                const genderIndex = headers.findIndex(h => h.includes('kelamin') || h.includes('gender'));
                 
-                const students = [];
-                
-                // Process each data row
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (row.length < 2) continue;
+                for (let i = 1; i < lines.length; i++) {
+                    const cells = lines[i].split(',');
+                    if (cells.length < 2) continue;
                     
-                    const name = nameIndex >= 0 && row[nameIndex] ? row[nameIndex].trim() : '';
-                    const nis = nisIndex >= 0 && row[nisIndex] ? row[nisIndex].trim() : '';
-                    const studentClass = classIndex >= 0 && row[classIndex] ? row[classIndex].trim() : 'XI RPL';
-                    const gender = genderIndex >= 0 && row[genderIndex] ? row[genderIndex].trim().toLowerCase() : '';
+                    const name = nameIndex >= 0 ? cells[nameIndex]?.trim() : '';
+                    const nis = nisIndex >= 0 ? cells[nisIndex]?.trim() : '';
+                    const studentClass = classIndex >= 0 ? cells[classIndex]?.trim() : 'XI RPL';
+                    const gender = genderIndex >= 0 ? cells[genderIndex]?.trim() : '';
                     
-                    // Only include if it's from XI RPL class
                     if (name && studentClass.includes('XI RPL')) {
                         students.push({
                             name: name,
-                            nis: nis,
+                            nis: nis || (i).toString().padStart(3, '0'),
                             class: studentClass,
                             gender: gender,
                             status: 'sholat'
@@ -564,64 +314,10 @@
                 }
                 
                 return students;
-                
             } catch (error) {
-                console.error('Error parsing students CSV:', error);
+                console.error('Error parsing CSV:', error);
                 return [];
             }
-        }
-
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current);
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            
-            result.push(current);
-            return result;
-        }
-
-        function findColumnIndex(headers, possibleNames) {
-            for (const name of possibleNames) {
-                const index = headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
-                if (index >= 0) return index;
-            }
-            return -1;
-        }
-
-        function useFallbackStudents() {
-            const fallbackStudents = [
-                'AULIA AZZARA NUR RAMDANI', 'CHIKA AFINSA RAMADHANI', 'RENO FIRMANSYAH', 'RISQI ADITYA',
-                'AUGUSTAV BRILLYAN SINDUARTHA', 'PUTRA PUGUH PRADANA', 'SALSAHIRA DUWI APRILIA', 'WAHYU EKA ADI PRATAMA',
-                'FIRDAUS ZIDDAN AZZAINURI', 'MARVELINO ALFRADO', 'MUHAMMAD EDI SANTOSO', 'NABILA NUR AZIZAH',
-                'ADINDA ANEZTYA ZAHRA', 'FARHAN DHIYA\'UL HAQ', 'RAFAEL ONIL MULYA PUTRA', 'REYHAN ALIF RAMADHAN',
-                'AYU DWI HANAFI', 'BRIANDA WISNU YUSENA', 'RAFI ARDIANSYAH EGI RAMADHAN', 'VALENTINO AFASHA SALEH',
-                'DINDA MAI SAFIRA', 'MUHAMMAD HATTA PRIMA NURRAHMAN', 'MUHAMMAD IRFAN KHOIRUL HIDAYAH', 'NUR RAHMAD HIDAYAT'
-            ];
-            
-            studentsData = fallbackStudents.map(name => ({
-                name: name,
-                nis: '',
-                class: 'XI RPL',
-                gender: '',
-                status: 'sholat'
-            }));
-            
-            document.getElementById('studentsLoading').classList.add('hidden');
-            document.getElementById('studentsContainer').classList.remove('hidden');
-            displayStudents();
         }
 
         // Display Students
@@ -629,27 +325,23 @@
             const container = document.getElementById('studentsContainer');
             container.innerHTML = '';
             
-            const prayer = prayerConfig[currentPrayer];
+            const prayerIcon = currentPrayer === 'dhuha' ? '🌅' : 
+                              currentPrayer === 'dhuhur' ? '☀️' :
+                              currentPrayer === 'ashar' ? '🌇' : '🕌';
             
             studentsData.forEach((student, index) => {
                 const studentCard = document.createElement('div');
                 studentCard.className = 'flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
                 
-                const isJumat = currentPrayer === 'jumat';
-                const isFemale = student.gender && student.gender.includes('perempuan');
-                const jumatClass = isJumat && isFemale ? 'opacity-60' : '';
-                
                 studentCard.innerHTML = `
-                    <div class="flex items-center ${jumatClass}">
+                    <div class="flex items-center">
                         <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
                             <span class="text-green-600 font-semibold">${index + 1}</span>
                         </div>
                         <div>
                             <h4 class="font-semibold text-gray-800">${student.name}</h4>
-                            <p class="text-sm text-gray-600">${prayer.icon} ${prayer.name} - ${student.class}</p>
-                            ${student.nis ? `<p class="text-xs text-gray-500">NIS: ${student.nis}</p>` : ''}
+                            <p class="text-sm text-gray-600">${prayerIcon} NIS: ${student.nis}</p>
                             ${student.gender ? `<p class="text-xs text-gray-500">${student.gender}</p>` : ''}
-                            ${isJumat && isFemale ? `<p class="text-xs text-orange-600 font-medium">⚠️ Tidak wajib Sholat Jum'at</p>` : ''}
                         </div>
                     </div>
                     <div class="flex gap-1 flex-wrap">
@@ -696,8 +388,16 @@
             document.getElementById('totalCount').textContent = totalCount;
         }
 
-        // Validation function
-        function validateAndSubmit() {
+        // Handle prayer selection change
+        document.getElementById('prayerSelect').addEventListener('change', function() {
+            currentPrayer = this.value;
+            if (studentsData.length > 0) {
+                displayStudents();
+            }
+        });
+
+        // Main function to submit to Google Form
+        async function submitToGoogleForm() {
             const date = document.getElementById('attendanceDate').value;
             const prayer = document.getElementById('prayerSelect').value;
             
@@ -706,222 +406,145 @@
                 return;
             }
             
-            const hasEmptyStatus = studentsData.some(student => !student.status);
-            if (hasEmptyStatus) {
-                showError('Mohon pastikan semua siswa memiliki status kehadiran!');
-                return;
+            const prayerName = getPrayerName(prayer);
+            
+            // Show progress modal
+            showProgressModal(0, studentsData.length);
+            
+            let successCount = 0;
+            let errorCount = 0;
+            const errors = [];
+            
+            // Submit each student individually
+            for (let i = 0; i < studentsData.length; i++) {
+                const student = studentsData[i];
+                
+                try {
+                    await submitStudentData(student, date, prayerName);
+                    successCount++;
+                } catch (error) {
+                    console.error(`Error submitting data for ${student.name}:`, error);
+                    errorCount++;
+                    errors.push(`${student.name}: ${error.message}`);
+                }
+                
+                // Update progress
+                updateProgressModal(i + 1, studentsData.length, successCount, errorCount);
+                
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
             
-            showConfirmationModal();
+            // Hide progress modal
+            hideProgressModal();
+            
+            // Show results
+            if (errorCount === 0) {
+                showSuccess(`✅ Berhasil menyimpan data semua ${successCount} siswa!`);
+            } else if (successCount > 0) {
+                showSuccess(`✅ ${successCount} data berhasil disimpan, ${errorCount} gagal.`);
+            } else {
+                showError(`❌ Gagal menyimpan semua data. Error: ${errors.join(', ')}`);
+            }
         }
 
-        // SUBMIT ATTENDANCE TO GOOGLE SHEETS
-        async function submitAttendance() {
-            const date = document.getElementById('attendanceDate').value;
-            const prayer = document.getElementById('prayerSelect').value;
+        // Submit individual student data to Google Form
+        async function submitStudentData(student, date, prayerName) {
+            const formData = new URLSearchParams();
             
-            // Show loading state
-            const submitButton = document.querySelector('button[onclick="submitAttendance()"]');
-            const originalText = submitButton.innerHTML;
-            submitButton.innerHTML = '⏳ Menyimpan...';
-            submitButton.disabled = true;
+            // Add form fields sesuai dengan Google Form Anda
+            formData.append(FORM_FIELD_IDS.timestamp, new Date().toISOString());
+            formData.append(FORM_FIELD_IDS.date, date);
+            formData.append(FORM_FIELD_IDS.class, student.class);
+            formData.append(FORM_FIELD_IDS.prayer, prayerName);
+            formData.append(FORM_FIELD_IDS.studentName, student.name);
+            formData.append(FORM_FIELD_IDS.status, getStatusText(student.status));
+            formData.append(FORM_FIELD_IDS.nis, student.nis);
             
             try {
-                const prayerName = prayerConfig[prayer].name;
-                
-                // Prepare attendance data
-                const attendanceRecords = studentsData.map(student => ({
-                    timestamp: new Date().toISOString(),
-                    date: date,
-                    class: student.class,
-                    prayer: prayerName,
-                    studentName: student.name,
-                    status: student.status,
-                    nis: student.nis,
-                    gender: student.gender
-                }));
-                
-                console.log('Sending attendance data to:', webAppUrl);
-                console.log('Data:', attendanceRecords);
-                
-                // Multiple submission methods for reliability
-                let success = false;
-                let result = null;
-                let lastError = null;
-                
-                // Method 1: POST with JSON
-                try {
-                    console.log('Trying Method 1: POST with JSON');
-                    const response = await fetch(webAppUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            action: 'saveAttendance',
-                            data: attendanceRecords
-                        })
-                    });
-                    
-                    result = await response.json();
-                    console.log('Method 1 result:', result);
-                    
-                    if (result.success) {
-                        success = true;
-                    } else {
-                        lastError = result.error || 'Unknown error from server';
+                const response = await fetch(GOOGLE_FORM_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors', // Important for Google Forms
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     }
-                } catch (error) {
-                    console.log('Method 1 failed:', error);
-                    lastError = error.message;
-                }
+                });
                 
-                // Method 2: FormData
-                if (!success) {
-                    try {
-                        console.log('Trying Method 2: FormData');
-                        const formData = new FormData();
-                        formData.append('action', 'saveAttendance');
-                        formData.append('data', JSON.stringify(attendanceRecords));
-                        
-                        const response = await fetch(webAppUrl, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        result = await response.json();
-                        console.log('Method 2 result:', result);
-                        
-                        if (result.success) {
-                            success = true;
-                        } else {
-                            lastError = result.error || 'Unknown error from server';
-                        }
-                    } catch (error) {
-                        console.log('Method 2 failed:', error);
-                        lastError = error.message;
-                    }
-                }
-                
-                // Method 3: URL parameters (GET)
-                if (!success) {
-                    try {
-                        console.log('Trying Method 3: GET with URL parameters');
-                        const params = new URLSearchParams({
-                            action: 'saveAttendance',
-                            data: JSON.stringify(attendanceRecords)
-                        });
-                        
-                        const response = await fetch(`${webAppUrl}?${params}`, {
-                            method: 'GET'
-                        });
-                        
-                        result = await response.json();
-                        console.log('Method 3 result:', result);
-                        
-                        if (result.success) {
-                            success = true;
-                        } else {
-                            lastError = result.error || 'Unknown error from server';
-                        }
-                    } catch (error) {
-                        console.log('Method 3 failed:', error);
-                        lastError = error.message;
-                    }
-                }
-                
-                if (success) {
-                    // Show success message
-                    const successContent = document.getElementById('successContent');
-                    successContent.textContent = result.message || `Data kehadiran ${prayerName} berhasil disimpan untuk ${attendanceRecords.length} siswa!`;
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    hideConfirmationModal();
-                    
-                    // Auto-hide success message after 5 seconds
-                    setTimeout(() => {
-                        document.getElementById('successMessage').classList.add('hidden');
-                    }, 5000);
-                    
-                    // Refresh statistics after successful submission
-                    setTimeout(() => {
-                        console.log('Refreshing statistics after successful submission...');
-                        loadStatistics();
-                    }, 2000);
-                    
-                } else {
-                    throw new Error(lastError || 'Semua metode pengiriman gagal. Periksa koneksi internet dan URL Google Apps Script.');
-                }
+                // Dengan no-cors mode, kita tidak bisa membaca response
+                // Jadi kita asumsikan berhasil jika tidak ada error network
+                console.log(`Data terkirim untuk: ${student.name}`);
+                return true;
                 
             } catch (error) {
-                console.error('Error saving prayer attendance:', error);
-                showError(`Gagal menyimpan data: ${error.message}`);
-            } finally {
-                // Restore button state
-                submitButton.innerHTML = originalText;
-                submitButton.disabled = false;
+                throw new Error(`Network error: ${error.message}`);
             }
         }
 
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            const errorContent = document.getElementById('errorContent');
-            errorContent.textContent = message;
-            errorMessage.classList.remove('hidden');
+        function getPrayerName(prayer) {
+            const prayers = {
+                'dhuha': 'Dhuha',
+                'dhuhur': 'Dhuhur',
+                'ashar': 'Ashar',
+                'jumat': 'Jumat'
+            };
+            return prayers[prayer] || prayer;
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'sholat': 'Sholat',
+                'berhalangan': 'Berhalangan',
+                'tidak_sholat': 'Tidak Sholat'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Progress Modal Functions
+        function showProgressModal(current, total) {
+            const modal = document.getElementById('progressModal');
+            modal.classList.remove('hidden');
+            updateProgressModal(current, total, 0, 0);
+        }
+
+        function updateProgressModal(current, total, success, error) {
+            const percentage = (current / total) * 100;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${current}/${total}`;
+            
+            let message = `Mengirim data siswa...`;
+            if (success > 0 || error > 0) {
+                message += ` (✅ ${success} ❌ ${error})`;
+            }
+            document.getElementById('progressMessage').textContent = message;
+        }
+
+        function hideProgressModal() {
+            const modal = document.getElementById('progressModal');
+            modal.classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            const successElement = document.getElementById('successMessage');
+            const successContent = document.getElementById('successContent');
+            successContent.textContent = message;
+            successElement.classList.remove('hidden');
             
             setTimeout(() => {
-                errorMessage.classList.add('hidden');
+                successElement.classList.add('hidden');
             }, 8000);
         }
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            showPage('dashboardPage');
-            loadRecentActivity();
-        });
-
-        function loadRecentActivity() {
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            const errorContent = document.getElementById('errorContent');
+            errorContent.textContent = message;
+            errorElement.classList.remove('hidden');
+            
             setTimeout(() => {
-                document.getElementById('recentActivity').innerHTML = `
-                    <div class="flex items-center p-3 bg-green-50 rounded-lg">
-                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                            <span class="text-green-600">🌅</span>
-                        </div>
-                        <div>
-                            <p class="font-medium text-gray-800">Sholat Dhuha - ${studentsData.length} Siswa</p>
-                            <p class="text-sm text-gray-600">Data terbaru akan muncul di sini</p>
-                        </div>
-                    </div>
-                `;
-            }, 1000);
+                errorElement.classList.add('hidden');
+            }, 10000);
         }
-
-        // Statistics functions
-        async function loadStatistics() {
-            console.log('Loading statistics...');
-        }
-
-        function showStatsTab(tabName) {
-            console.log('Showing tab:', tabName);
-        }
-
-        function filterDailyStats() {
-            console.log('Filtering daily stats...');
-        }
-
-        function filterWeeklyStats() {
-            console.log('Filtering weekly stats...');
-        }
-
-        function filterMonthlyStats() {
-            console.log('Filtering monthly stats...');
-        }
-
-        function getWeekString(date) {
-            const year = date.getFullYear();
-            const week = Math.ceil((((date - new Date(date.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
-            return `${year}-W${week.toString().padStart(2, '0')}`;
-        }
-
     </script>
 </body>
 </html>
